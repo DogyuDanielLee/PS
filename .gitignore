@@ -57,5 +57,6 @@ Makefile
 *.replit
 replit.nix
 main.c
+test.c
 main
 input.txt
