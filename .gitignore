@@ -51,8 +51,11 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# repl.it
+# replit
 .ccls-cache
 Makefile
 *.replit
 replit.nix
+main.c
+main
+input.txt
