@@ -12,6 +12,8 @@ Reference:
 #include <stdio.h>
 #include <stdlib.h>
 
+#define INF 2147483647
+
 bool debug = false;
 
 int32_t min2(int32_t a, int32_t b) { return (a > b) ? (b) : (a); }
@@ -25,43 +27,27 @@ int32_t solve_dp(int32_t curr, int32_t cannot_use, int32_t **cost, int32_t **dp,
     b = cost[curr][1] + solve_dp(curr + 1, 1, cost, dp, N);
     c = cost[curr][2] + solve_dp(curr + 1, 2, cost, dp, N);
     return min3(a, b, c);
-  } else if (curr == N - 1) {
-    if (dp[curr][cannot_use] != -1)
-      return dp[curr][cannot_use];
-
-    if (cannot_use == 0)
-      dp[curr][cannot_use] = min2(cost[curr][1], cost[curr][2]);
-    else if (cannot_use == 1)
-      dp[curr][cannot_use] = min2(cost[curr][0], cost[curr][2]);
-    else if (cannot_use == 2)
-      dp[curr][cannot_use] = min2(cost[curr][0], cost[curr][1]);
-    else {
-      perror("cannotuse must be 0 or 1 or 2");
-      exit(EXIT_FAILURE);
-    }
-    return dp[curr][cannot_use];
-  } else {
-    if (dp[curr][cannot_use] != -1)
-      return dp[curr][cannot_use];
-
-    if (cannot_use == 0) {
-      a = cost[curr][1] + solve_dp(curr + 1, 1, cost, dp, N);
-      b = cost[curr][2] + solve_dp(curr + 1, 2, cost, dp, N);
-      dp[curr][cannot_use] = min2(a, b);
-    } else if (cannot_use == 1) {
-      a = cost[curr][0] + solve_dp(curr + 1, 0, cost, dp, N);
-      b = cost[curr][2] + solve_dp(curr + 1, 2, cost, dp, N);
-      dp[curr][cannot_use] = min2(a, b);
-    } else if (cannot_use == 2) {
-      a = cost[curr][0] + solve_dp(curr + 1, 0, cost, dp, N);
-      b = cost[curr][1] + solve_dp(curr + 1, 1, cost, dp, N);
-      dp[curr][cannot_use] = min2(a, b);
-    } else {
-      perror("cannotuse must be 0 or 1 or 2");
-      exit(EXIT_FAILURE);
-    }
-    return dp[curr][cannot_use];
   }
+
+  int32_t * ret = &dp[curr][cannot_use];
+  if (*ret != -1)
+    return *ret;
+
+  *ret = INF;
+  if (curr == N - 1){
+    for (int i = 0; i < 3; i++){
+      if (i != cannot_use)
+        * ret = min2(*ret, cost[curr][i]);
+    }
+  }
+  else{
+    for (int i = 0; i < 3; i++){
+      if (i != cannot_use){
+        *ret = min2(*ret, cost[curr][i] + solve_dp(curr + 1, i, cost, dp, N));
+      }
+    }
+  }
+  return *ret;
 }
 
 int main(void) {
@@ -98,10 +84,13 @@ int main(void) {
   printf("%" PRId32 "\n", ans);
 
   // clear
-  for (int32_t i = 0; i < N; i++)
+  for (int32_t i = 0; i < N; i++){
     free(dp[i]);
+    free(cost[i]);
+  }
   free(dp);
-
+  free(cost);
+  
   if (debug)
     fclose(fin);
 }
