@@ -1,6 +1,6 @@
 /*
 BOJ # 2533
-URL: https://www.acmicpc.net/problem/1149
+URL: https://www.acmicpc.net/problem/2533
 Date: September 10, 2024
 Memo: tree, dynamic programming
 Reference: Ries Naver Blog (https://blog.naver.com/kks227/220793134705)
